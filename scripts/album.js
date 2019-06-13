@@ -10,11 +10,28 @@ var createSongRow = function (songNumber, songName, songLength) {
    var $row = $(template);
 
   var handleSongClick = function () {
-    var clickedSongNumber = $(this).attr('data-song-number');
-
-    currentlyPlayingSongNumber = clickedSongNumber;
     
-    $(this).html(pauseButtonTemplate);
+    var clickedSongNumber = $(this).attr('data-song-number');
+    
+    //1 there is a song that is currently playing
+    if (currentlyPlayingSongNumber !== null) {
+      var currentlyPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+      currentlyPlayingCell.html(currentlyPlayingSongNumber);
+    }
+
+    //2 there is a song currently playg, but a different one was clicked to play
+    if (clickedSongNumber !== currentlyPlayingSongNumber) {
+      currentlyPlayingSongNumber = clickedSongNumber;
+      $(this).html(pauseButtonTemplate);
+    }
+
+    //3 the currently playing song was clicked
+
+    else {
+      currentlyPlayingSongNumber = null;
+      $(this).html(clickedSongNumber);
+    }
+
   };
 
    var onHover = function () {
@@ -59,6 +76,12 @@ var setCurrentAlbum = function(album) {
     var $songRow = createSongRow(i + 1, album.songs[i].title, album.songs[i].duration);
     $albumSongList.append($songRow);
   }
+};
+
+var setSong = function (songNumber) {
+
+  
+
 };
 
 var currentlyPlayingSongNumber = null;
