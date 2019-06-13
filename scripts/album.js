@@ -20,11 +20,8 @@ var createSongRow = function (songNumber, songName, songLength) {
     }
 
     //2 there is a song currently playg, but a different one was clicked to play
-    if (clickedSongNumber !== currentlyPlayingSongNumber) {
+    if (clickedSongNumber !== currentlyPlayingSongNumber && songPaused === null) {
       currentlyPlayingSongNumber = clickedSongNumber;
-
-      if (currentSoundFile !== null)
-        currentSoundFile.stop();
 
       setSong(songNumber);
       
@@ -36,6 +33,10 @@ var createSongRow = function (songNumber, songName, songLength) {
     //3 the currently playing song was clicked
 
     else {
+
+      songPaused = (songPaused) ? false : true;
+
+      currentSoundFile.togglePlay();
       currentlyPlayingSongNumber = null;
       $(this).html(clickedSongNumber);
     }
@@ -88,7 +89,10 @@ var setCurrentAlbum = function(album) {
 
 var setSong = function (songNumber) {
 
-  currentSoundFile = new buzz.sound(albums[0].songs[songNumber-1].audioUrl, {
+  if (currentSoundFile)
+    currentSoundFile.stop();
+
+  currentSoundFile = new buzz.sound(albums[albumNumber].songs[songNumber-1].audioUrl, {
     formats: ['mp3'],
     preload: true,
   });
@@ -97,9 +101,10 @@ var setSong = function (songNumber) {
 
 var currentSoundFile = null;
 var currentlyPlayingSongNumber = null;
+var songPaused = null;
 var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 
 const albumNumber = Math.round(Math.random());
 
-setCurrentAlbum(albums[0]);
+setCurrentAlbum(albums[albumNumber]);
