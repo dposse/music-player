@@ -7,67 +7,82 @@ var createSongRow = function (songNumber, songName, songLength) {
    + '</tr>'
    ;
 
-   var $row = $(template);
-
   var handleSongClick = function () {
-    
     var clickedSongNumber = $(this).attr('data-song-number');
-    
-    //1 there is a song that is currently playing
+
+    // 1. There is no song that is currently playing
     if (currentlyPlayingSongNumber !== null) {
       var currentlyPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+
       currentlyPlayingCell.html(currentlyPlayingSongNumber);
     }
 
-    //2 there is a song currently playg, but a different one was clicked to play
-    if (clickedSongNumber !== currentlyPlayingSongNumber && songPaused === null) {
+    // 2. There is a song currently playing, but a different one was clicked to play
+    if (clickedSongNumber !== currentlyPlayingSongNumber) {
       currentlyPlayingSongNumber = clickedSongNumber;
 
+      // set up the song to play
       setSong(songNumber);
-      
+
       currentSoundFile.play();
 
       $(this).html(pauseButtonTemplate);
-    }
 
-    //3 the currently playing song was clicked
-
-    else {
-
-      songPaused = (songPaused) ? false : true;
-
+      // 3. The currently playing song was clicked
+    } else {
       currentSoundFile.togglePlay();
-      currentlyPlayingSongNumber = null;
+
       $(this).html(clickedSongNumber);
     }
-
   };
 
-   var onHover = function () {
-     var songItem = $(this).find('.song-item-number');
-     var songNumber = songItem.attr('data-song-number');
+  var onHover = function () {
+    var songItem = $(this).find('.song-item-number');
+    var songNumber = songItem.attr('data-song-number');
 
-     if (songNumber !== currentlyPlayingSongNumber) {
-       songItem.html(playButtonTemplate);
-     }
-   };
+    // if the song being hovered over isn't the one being played
+    if (songNumber !== currentlyPlayingSongNumber) {
+      // show the play button
+      songItem.html(playButtonTemplate);
+    }
+  };
 
-   var offHover = function () {
-     var songItem = $(this).find('.song-item-number');
-     var songNumber = songItem.attr('data-song-number');
+  var setSong = function (songNumber) {
+    if (currentSoundFile) {
+      currentSoundFile.stop();
+    }
 
-     if (songNumber !== currentlyPlayingSongNumber) {
+    var songUrl = currentAlbum.songs[currentlyPlayingSongNumber - 1].audioUrl;
+
+    currentSoundFile = new buzz.sound(songUrl, {
+      formats: [ 'mp3' ],
+      preload: true
+    });
+  }
+
+  var offHover = function () {
+    var songItem = $(this).find('.song-item-number');
+    var songNumber = songItem.attr('data-song-number');
+
+    // if the song being hovered over isn't the one being played
+    if (songNumber !== currentlyPlayingSongNumber){
+      // revert back to just showing the song number
       songItem.html(songNumber);
-     }
-   };
+    }
+  }
 
-   $row.find('.song-item-number').click(handleSongClick);
-   $row.hover(onHover, offHover);
+  var $row = $(template);
 
-   return $row;
+  $row.find('.song-item-number').click(handleSongClick);
+  $row.hover(onHover, offHover);
+
+  return $row;
 };
 
+
 var setCurrentAlbum = function(album) {
+  currentAlbum = album;
+
   var $albumTitle = $('.album-view-title');
   var $albumArtist = $('.album-view-artist');
   var $albumReleaseInfo = $('.album-view-release-info');
@@ -87,24 +102,10 @@ var setCurrentAlbum = function(album) {
   }
 };
 
-var setSong = function (songNumber) {
-
-  if (currentSoundFile)
-    currentSoundFile.stop();
-
-  currentSoundFile = new buzz.sound(albums[albumNumber].songs[songNumber-1].audioUrl, {
-    formats: ['mp3'],
-    preload: true,
-  });
-
-};
-
-var currentSoundFile = null;
-var currentlyPlayingSongNumber = null;
-var songPaused = null;
-var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
+var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
+var currentlyPlayingSongNumber = null;
+var currentSoundFile = null;
+var currentSoundFileIsPaused = false;
 
-const albumNumber = Math.round(Math.random());
-
-setCurrentAlbum(albums[albumNumber]);
+setCurrentAlbum(albums[1]);
