@@ -32,7 +32,12 @@ var createSongRow = function (songNumber, songName, songLength) {
     } else {
       currentSoundFile.togglePlay();
 
-      $(this).html(clickedSongNumber);
+      if (currentSoundFile.isPaused())
+        $(this).html(playButtonTemplate);
+      else
+        $(this).html(pauseButtonTemplate);
+
+      //$(this).html(clickedSongNumber);
     }
   };
 
