@@ -9,18 +9,33 @@ var createSongRow = function (songNumber, songName, songLength) {
 
    var $row = $(template);
 
+  var handleSongClick = function () {
+    var clickedSongNumber = $(this).attr('data-song-number');
+
+    currentlyPlayingSongNumber = clickedSongNumber;
+    
+    $(this).html(pauseButtonTemplate);
+  };
+
    var onHover = function () {
      var songItem = $(this).find('.song-item-number');
-     songItem.html(playButtonTemplate);
+     var songNumber = songItem.attr('data-song-number');
+
+     if (songNumber !== currentlyPlayingSongNumber) {
+       songItem.html(playButtonTemplate);
+     }
    };
 
    var offHover = function () {
      var songItem = $(this).find('.song-item-number');
      var songNumber = songItem.attr('data-song-number');
 
-     songItem.html(songNumber);
+     if (songNumber !== currentlyPlayingSongNumber) {
+      songItem.html(songNumber);
+     }
    };
 
+   $row.find('.song-item-number').click(handleSongClick);
    $row.hover(onHover, offHover);
 
    return $row;
@@ -46,6 +61,8 @@ var setCurrentAlbum = function(album) {
   }
 };
 
+var currentlyPlayingSongNumber = null;
+var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 
 setCurrentAlbum(albums[Math.round(Math.random())]);
