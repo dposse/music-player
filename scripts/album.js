@@ -28,15 +28,18 @@ var createSongRow = function (songNumber, songName, songLength) {
 
       $(this).html(pauseButtonTemplate);
 
+      let tempSongName = albums[albumNumber].songs[songNumber-1].title;
+      let tempSongArtist = albums[albumNumber].artist;
+
+      $('.song-name').html(tempSongName);
+      $('.artist-name').html(tempSongArtist);
+      $('.artist-song-mobile').html(`${tempSongName} - ${tempSongArtist}`);
+
       // 3. The currently playing song was clicked
     } else {
       currentSoundFile.togglePlay();
 
-      if (currentSoundFile.isPaused())
-        $(this).html(playButtonTemplate);
-      else
-        $(this).html(pauseButtonTemplate);
-
+      (currentSoundFile.isPaused()) ? $(this).html(playButtonTemplate) : $(this).html(pauseButtonTemplate);
       //$(this).html(clickedSongNumber);
     }
   };
@@ -112,5 +115,6 @@ var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause">
 var currentlyPlayingSongNumber = null;
 var currentSoundFile = null;
 var currentSoundFileIsPaused = false;
+var albumNumber = 0;
 
-setCurrentAlbum(albums[1]);
+setCurrentAlbum(albums[albumNumber]);
